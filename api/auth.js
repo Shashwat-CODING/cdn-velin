@@ -1,17 +1,29 @@
-// Simplified auth.js - No environment variables or external dependencies
+// Auth API using MongoDB for persistence
 const crypto = require('crypto');
+const { MongoClient } = require('mongodb');
 
-// In-memory storage - For a production app, you'd want to use a database
-const users = {};
-
-// Fixed JWT secret - In production, this should be an environment variable
+// Connection URI - Replace password in production or use environment variables
+const MONGODB_URI = "mongodb+srv://bob17040246:bob17040246@cluster0.u1ox3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const JWT_SECRET = "your-fixed-jwt-secret-replace-in-production";
+
+// Database connection caching for serverless environment
+let cachedDb = null;
+async function connectToDatabase() {
+  if (cachedDb) {
+    return cachedDb;
+  }
+  
+  const client = await MongoClient.connect(MONGODB_URI);
+  const db = client.db("auth-db");
+  cachedDb = db;
+  return db;
+}
 
 // Helper functions
 const generateSalt = () => Math.random().toString(36).substring(2, 15);
 const hashPassword = (password, salt) => crypto.createHash('sha256').update(password + salt).digest('hex');
 
-// Simple JWT implementation
+// JWT functions
 const generateToken = (payload) => {
   const header = { alg: 'HS256', typ: 'JWT' };
   const exp = Math.floor(Date.now() / 1000) + 24 * 60 * 60; // 24 hours expiration
@@ -70,6 +82,9 @@ module.exports = async (req, res) => {
   const path = req.url.split('/').pop();
   
   try {
+    const db = await connectToDatabase();
+    const users = db.collection('users');
+    
     // SIGNUP ENDPOINT
     if (path === 'signup' && req.method === 'POST') {
       const { email, password } = req.body;
@@ -79,7 +94,8 @@ module.exports = async (req, res) => {
       }
       
       // Check if user already exists
-      if (users[email]) {
+      const existingUser = await users.findOne({ email });
+      if (existingUser) {
         return res.status(409).json({ success: false, message: 'User already exists' });
       }
       
@@ -88,11 +104,12 @@ module.exports = async (req, res) => {
       const hashedPassword = hashPassword(password, salt);
       
       // Store user
-      users[email] = {
+      await users.insertOne({
+        email,
         salt,
         password: hashedPassword,
         createdAt: new Date().toISOString()
-      };
+      });
       
       // Generate JWT
       const token = generateToken({ email });
@@ -113,12 +130,13 @@ module.exports = async (req, res) => {
       }
       
       // Check if user exists
-      if (!users[email]) {
+      const user = await users.findOne({ email });
+      
+      if (!user) {
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
       }
       
       // Verify password
-      const user = users[email];
       const hashedPassword = hashPassword(password, user.salt);
       
       if (hashedPassword !== user.password) {
@@ -158,10 +176,7 @@ module.exports = async (req, res) => {
     
     // LIST ALL USERS ENDPOINT
     if (path === 'users' && req.method === 'GET') {
-      const userList = Object.keys(users).map(email => ({
-        email,
-        createdAt: users[email].createdAt
-      }));
+      const userList = await users.find({}, { projection: { email: 1, createdAt: 1, _id: 0 } }).toArray();
       
       return res.status(200).json({
         success: true,
