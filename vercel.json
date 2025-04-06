@@ -2,8 +2,5 @@
   "version": 2,
   "routes": [
     { "src": "/api/auth/(.*)", "dest": "/api/auth.js" }
-  ],
-  "env": {
-    "JWT_SECRET": "@jwt_secret"
-  }
+  ]
 }
