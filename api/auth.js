@@ -9,16 +9,36 @@ const edge = createClient(process.env.EDGE_CONFIG);
 const generateSalt = () => Math.random().toString(36).substring(2, 15);
 const hashPassword = (password, salt) => createHash('sha256').update(password + salt).digest('hex');
 
+// Middleware to verify admin access
+const verifyAdminToken = (req) => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return false;
+    }
+    
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Check if this is an admin user (you might want to add admin flag in user data)
+    // For testing purposes, we'll just check if the token is valid
+    return !!decoded;
+  } catch (error) {
+    return false;
+  }
+};
+
 module.exports = async (req, res) => {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
-
+  
   const path = req.url.split('/').pop();
   
   try {
@@ -114,6 +134,59 @@ module.exports = async (req, res) => {
       } catch (error) {
         return res.status(401).json({ success: false, message: 'Invalid token' });
       }
+    }
+    
+    // LIST ALL USERS ENDPOINT - Admin/Testing only
+    if (path === 'users' && req.method === 'GET') {
+      // In a production environment, you should secure this endpoint
+      if (!process.env.TESTING_MODE && !verifyAdminToken(req)) {
+        return res.status(403).json({ success: false, message: 'Unauthorized access' });
+      }
+      
+      // Get users from Edge Config
+      const users = await edge.get('users') || {};
+      
+      // Format user data (you might want to exclude sensitive information in production)
+      const userList = Object.keys(users).map(email => {
+        // For testing/development, include all info
+        if (process.env.TESTING_MODE === 'true') {
+          return {
+            email,
+            ...users[email]
+          };
+        }
+        
+        // For production, exclude sensitive info
+        return {
+          email,
+          createdAt: users[email].createdAt
+        };
+      });
+      
+      return res.status(200).json({
+        success: true,
+        userCount: userList.length,
+        users: userList
+      });
+    }
+    
+    // RESET DATABASE ENDPOINT - Testing only
+    if (path === 'reset' && req.method === 'DELETE') {
+      // Only allow this in testing mode
+      if (process.env.TESTING_MODE !== 'true') {
+        return res.status(403).json({ 
+          success: false, 
+          message: 'This endpoint is only available in testing mode' 
+        });
+      }
+      
+      // Reset users database
+      await edge.set('users', {});
+      
+      return res.status(200).json({
+        success: true,
+        message: 'Database reset successfully'
+      });
     }
     
     // Endpoint not found
