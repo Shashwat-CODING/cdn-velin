@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const { MongoClient } = require('mongodb');
 
 // Connection URI - Replace password in production or use environment variables
-const MONGODB_URI = "mongodb+srv://bob17040246:bob17040246@cluster0.u1ox3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const MONGODB_URI = "mongodb+srv://bob17040246:shashwat@cluster0.u1ox3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const JWT_SECRET = "your-fixed-jwt-secret-replace-in-production";
 
 // Database connection caching for serverless environment
