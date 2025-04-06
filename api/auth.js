@@ -1,6 +1,15 @@
 // Auth API using Neon PostgreSQL for persistence
 const crypto = require('crypto');
 const { Pool } = require('pg');
+const cors = require('cors');
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+
+// Enable CORS for all routes
+app.use(cors());
+app.use(bodyParser.json());
 
 // Connection config
 const pool = new Pool({
@@ -29,101 +38,102 @@ async function initializeDatabase() {
   }
 }
 
-// Main request handler
-module.exports = async (req, res) => {
-  // Handle CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  
-  const path = req.url.split('/').pop();
-  
+// Initialize database on startup
+initializeDatabase().catch(console.error);
+
+// SIGNUP ENDPOINT
+app.post('/signup', async (req, res) => {
   try {
-    // Ensure database is initialized
-    await initializeDatabase();
+    const { email, password } = req.body;
     
-    // SIGNUP ENDPOINT
-    if (path === 'signup' && req.method === 'POST') {
-      const { email, password } = req.body;
-      
-      if (!email || !password) {
-        return res.status(400).json({ success: false, message: 'Email and password required' });
-      }
-      
-      // Check if user already exists
-      const checkResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-      if (checkResult.rows.length > 0) {
-        return res.status(409).json({ success: false, message: 'User already exists' });
-      }
-      
-      // Create new user
-      const salt = generateSalt();
-      const hashedPassword = hashPassword(password, salt);
-      
-      // Store user
-      await pool.query(
-        'INSERT INTO users (email, password, salt) VALUES ($1, $2, $3)',
-        [email, hashedPassword, salt]
-      );
-      
-      return res.status(201).json({
-        success: true,
-        message: 'User created successfully',
-        email
-      });
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'Email and password required' });
     }
     
-    // SIGNIN ENDPOINT
-    if (path === 'signin' && req.method === 'POST') {
-      const { email, password } = req.body;
-      
-      if (!email || !password) {
-        return res.status(400).json({ success: false, message: 'Email and password required' });
-      }
-      
-      // Check if user exists
-      const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-      
-      if (result.rows.length === 0) {
-        return res.status(401).json({ success: false, message: 'Invalid credentials' });
-      }
-      
-      const user = result.rows[0];
-      
-      // Verify password
-      const hashedPassword = hashPassword(password, user.salt);
-      
-      if (hashedPassword !== user.password) {
-        return res.status(401).json({ success: false, message: 'Invalid credentials' });
-      }
-      
-      return res.status(200).json({
-        success: true,
-        message: 'Login successful',
-        email: user.email
-      });
+    // Check if user already exists
+    const checkResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (checkResult.rows.length > 0) {
+      return res.status(409).json({ success: false, message: 'User already exists' });
     }
     
-    // LIST ALL USERS ENDPOINT
-    if (path === 'users' && req.method === 'GET') {
-      const result = await pool.query('SELECT email, created_at FROM users');
-      
-      return res.status(200).json({
-        success: true,
-        userCount: result.rows.length,
-        users: result.rows
-      });
-    }
+    // Create new user
+    const salt = generateSalt();
+    const hashedPassword = hashPassword(password, salt);
     
-    // Endpoint not found
-    return res.status(404).json({ success: false, message: 'Endpoint not found' });
+    // Store user
+    await pool.query(
+      'INSERT INTO users (email, password, salt) VALUES ($1, $2, $3)',
+      [email, hashedPassword, salt]
+    );
     
+    return res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      email
+    });
   } catch (error) {
-    console.error('Auth API Error:', error.message);
+    console.error('Signup Error:', error);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
-};
+});
+
+// SIGNIN ENDPOINT
+app.post('/signin', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'Email and password required' });
+    }
+    
+    // Check if user exists
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    
+    if (result.rows.length === 0) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+    
+    const user = result.rows[0];
+    
+    // Verify password
+    const hashedPassword = hashPassword(password, user.salt);
+    
+    if (hashedPassword !== user.password) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+    
+    return res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      email: user.email
+    });
+  } catch (error) {
+    console.error('Signin Error:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// LIST ALL USERS ENDPOINT
+app.get('/users', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT email, created_at FROM users');
+    
+    return res.status(200).json({
+      success: true,
+      userCount: result.rows.length,
+      users: result.rows
+    });
+  } catch (error) {
+    console.error('List Users Error:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+// Export for serverless environments if needed
+module.exports = app;
