@@ -1,10 +1,8 @@
-// Auth API using Neon PostgreSQL for persistence
 const crypto = require('crypto');
 const { Pool } = require('pg');
 const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const app = express();
 
 // Enable CORS for all routes
@@ -13,7 +11,19 @@ app.use(bodyParser.json());
 
 // Connection config
 const pool = new Pool({
-  connectionString: 'postgresql://podcast_owner:npg_4AqXVbtgrGz3@ep-noisy-resonance-a5j31fh8-pooler.us-east-2.aws.neon.tech/podcast?sslmode=require'
+  connectionString: 'postgresql://podcast_owner:npg_4AqXVbtgrGz3@ep-noisy-resonance-a5j31fh8-pooler.us-east-2.aws.neon.tech/podcast?sslmode=require',
+  ssl: {
+    rejectUnauthorized: true
+  }
+});
+
+// Test database connection on startup
+pool.query('SELECT NOW()', (err, res) => {
+  if (err) {
+    console.error('Database connection error:', err);
+  } else {
+    console.log('Database connected successfully at:', res.rows[0].now);
+  }
 });
 
 // Helper functions
@@ -24,6 +34,7 @@ const hashPassword = (password, salt) => crypto.createHash('sha256').update(pass
 async function initializeDatabase() {
   const client = await pool.connect();
   try {
+    console.log('Initializing database...');
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -33,17 +44,47 @@ async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+    console.log('Database initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize database:', error);
   } finally {
     client.release();
   }
 }
 
 // Initialize database on startup
-initializeDatabase().catch(console.error);
+initializeDatabase().catch(err => {
+  console.error('Database initialization failed:', err);
+});
+
+// Database connection test endpoint
+app.get('/db-test', async (req, res) => {
+  try {
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT NOW()');
+      res.status(200).json({ 
+        success: true, 
+        message: 'Database connection successful',
+        timestamp: result.rows[0].now
+      });
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Database Connection Error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Database connection failed',
+      details: error.message
+    });
+  }
+});
 
 // SIGNUP ENDPOINT
 app.post('/signup', async (req, res) => {
   try {
+    console.log('Signup request received:', req.body);
     const { email, password } = req.body;
     
     if (!email || !password) {
@@ -66,6 +107,7 @@ app.post('/signup', async (req, res) => {
       [email, hashedPassword, salt]
     );
     
+    console.log('User created successfully:', email);
     return res.status(201).json({
       success: true,
       message: 'User created successfully',
@@ -73,13 +115,18 @@ app.post('/signup', async (req, res) => {
     });
   } catch (error) {
     console.error('Signup Error:', error);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Server error', 
+      details: error.message 
+    });
   }
 });
 
 // SIGNIN ENDPOINT
 app.post('/signin', async (req, res) => {
   try {
+    console.log('Signin request received:', req.body);
     const { email, password } = req.body;
     
     if (!email || !password) {
@@ -102,6 +149,7 @@ app.post('/signin', async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
     
+    console.log('User logged in successfully:', email);
     return res.status(200).json({
       success: true,
       message: 'Login successful',
@@ -109,7 +157,11 @@ app.post('/signin', async (req, res) => {
     });
   } catch (error) {
     console.error('Signin Error:', error);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Server error', 
+      details: error.message 
+    });
   }
 });
 
@@ -125,8 +177,17 @@ app.get('/users', async (req, res) => {
     });
   } catch (error) {
     console.error('List Users Error:', error);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Server error', 
+      details: error.message 
+    });
   }
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
 // Start the server
