@@ -1,34 +1,62 @@
-const { createHash } = require('crypto');
-const { createClient } = require('@vercel/edge-config');
-const jwt = require('jsonwebtoken');
+// Simplified auth.js - No environment variables or external dependencies
+const crypto = require('crypto');
 
-// Initialize Edge Config client
-const edge = createClient(process.env.EDGE_CONFIG);
+// In-memory storage - For a production app, you'd want to use a database
+const users = {};
+
+// Fixed JWT secret - In production, this should be an environment variable
+const JWT_SECRET = "your-fixed-jwt-secret-replace-in-production";
 
 // Helper functions
 const generateSalt = () => Math.random().toString(36).substring(2, 15);
-const hashPassword = (password, salt) => createHash('sha256').update(password + salt).digest('hex');
+const hashPassword = (password, salt) => crypto.createHash('sha256').update(password + salt).digest('hex');
 
-// Middleware to verify admin access
-const verifyAdminToken = (req) => {
+// Simple JWT implementation
+const generateToken = (payload) => {
+  const header = { alg: 'HS256', typ: 'JWT' };
+  const exp = Math.floor(Date.now() / 1000) + 24 * 60 * 60; // 24 hours expiration
+  const data = { ...payload, exp };
+  
+  const base64Header = Buffer.from(JSON.stringify(header)).toString('base64').replace(/=/g, '');
+  const base64Payload = Buffer.from(JSON.stringify(data)).toString('base64').replace(/=/g, '');
+  
+  const signature = crypto
+    .createHmac('sha256', JWT_SECRET)
+    .update(`${base64Header}.${base64Payload}`)
+    .digest('base64')
+    .replace(/=/g, '');
+  
+  return `${base64Header}.${base64Payload}.${signature}`;
+};
+
+const verifyToken = (token) => {
   try {
-    const authHeader = req.headers.authorization;
+    const [base64Header, base64Payload, signature] = token.split('.');
     
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return false;
+    const expectedSignature = crypto
+      .createHmac('sha256', JWT_SECRET)
+      .update(`${base64Header}.${base64Payload}`)
+      .digest('base64')
+      .replace(/=/g, '');
+    
+    if (signature !== expectedSignature) {
+      return null;
     }
     
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = JSON.parse(Buffer.from(base64Payload, 'base64').toString());
     
-    // Check if this is an admin user (you might want to add admin flag in user data)
-    // For testing purposes, we'll just check if the token is valid
-    return !!decoded;
+    // Check token expiration
+    if (payload.exp < Math.floor(Date.now() / 1000)) {
+      return null;
+    }
+    
+    return payload;
   } catch (error) {
-    return false;
+    return null;
   }
 };
 
+// Main request handler
 module.exports = async (req, res) => {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -50,9 +78,6 @@ module.exports = async (req, res) => {
         return res.status(400).json({ success: false, message: 'Email and password required' });
       }
       
-      // Get users from Edge Config
-      let users = await edge.get('users') || {};
-      
       // Check if user already exists
       if (users[email]) {
         return res.status(409).json({ success: false, message: 'User already exists' });
@@ -69,10 +94,8 @@ module.exports = async (req, res) => {
         createdAt: new Date().toISOString()
       };
       
-      await edge.set('users', users);
-      
       // Generate JWT
-      const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      const token = generateToken({ email });
       
       return res.status(201).json({
         success: true,
@@ -89,9 +112,6 @@ module.exports = async (req, res) => {
         return res.status(400).json({ success: false, message: 'Email and password required' });
       }
       
-      // Get users from Edge Config
-      const users = await edge.get('users') || {};
-      
       // Check if user exists
       if (!users[email]) {
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -106,7 +126,7 @@ module.exports = async (req, res) => {
       }
       
       // Generate JWT
-      const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      const token = generateToken({ email });
       
       return res.status(200).json({
         success: true,
@@ -124,44 +144,24 @@ module.exports = async (req, res) => {
       }
       
       const token = authHeader.split(' ')[1];
+      const decoded = verifyToken(token);
       
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        return res.status(200).json({
-          success: true,
-          user: { email: decoded.email }
-        });
-      } catch (error) {
+      if (!decoded) {
         return res.status(401).json({ success: false, message: 'Invalid token' });
       }
+      
+      return res.status(200).json({
+        success: true,
+        user: { email: decoded.email }
+      });
     }
     
-    // LIST ALL USERS ENDPOINT - Admin/Testing only
+    // LIST ALL USERS ENDPOINT
     if (path === 'users' && req.method === 'GET') {
-      // In a production environment, you should secure this endpoint
-      if (!process.env.TESTING_MODE && !verifyAdminToken(req)) {
-        return res.status(403).json({ success: false, message: 'Unauthorized access' });
-      }
-      
-      // Get users from Edge Config
-      const users = await edge.get('users') || {};
-      
-      // Format user data (you might want to exclude sensitive information in production)
-      const userList = Object.keys(users).map(email => {
-        // For testing/development, include all info
-        if (process.env.TESTING_MODE === 'true') {
-          return {
-            email,
-            ...users[email]
-          };
-        }
-        
-        // For production, exclude sensitive info
-        return {
-          email,
-          createdAt: users[email].createdAt
-        };
-      });
+      const userList = Object.keys(users).map(email => ({
+        email,
+        createdAt: users[email].createdAt
+      }));
       
       return res.status(200).json({
         success: true,
@@ -170,30 +170,11 @@ module.exports = async (req, res) => {
       });
     }
     
-    // RESET DATABASE ENDPOINT - Testing only
-    if (path === 'reset' && req.method === 'DELETE') {
-      // Only allow this in testing mode
-      if (process.env.TESTING_MODE !== 'true') {
-        return res.status(403).json({ 
-          success: false, 
-          message: 'This endpoint is only available in testing mode' 
-        });
-      }
-      
-      // Reset users database
-      await edge.set('users', {});
-      
-      return res.status(200).json({
-        success: true,
-        message: 'Database reset successfully'
-      });
-    }
-    
     // Endpoint not found
     return res.status(404).json({ success: false, message: 'Endpoint not found' });
     
   } catch (error) {
-    console.error('Auth API Error:', error);
+    console.error('Auth API Error:', error.message);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
