@@ -1,18 +1,19 @@
 {
   "version": 2,
+  "name": "auth-api",
   "builds": [
     {
-      "src": "index.js",
+      "src": "api/auth.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "index.js"
+      "dest": "api/auth.js"
     }
   ],
   "env": {
-    "URI": "@uri"
+    "DATABASE_URL": "postgresql://podcast_owner:npg_4AqXVbtgrGz3@ep-noisy-resonance-a5j31fh8-pooler.us-east-2.aws.neon.tech/podcast?sslmode=require"
   }
 }
