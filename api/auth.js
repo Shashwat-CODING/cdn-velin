@@ -83,20 +83,58 @@ app.get('/db-test', async (req, res) => {
   }
 });
 
-// RESET ENDPOINT - Clears all data from the database
+// Database schema check endpoint
+app.get('/db-schema', async (req, res) => {
+  try {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`
+        SELECT column_name, data_type 
+        FROM information_schema.columns 
+        WHERE table_name = 'users'
+      `);
+      res.status(200).json({ 
+        success: true, 
+        columns: result.rows
+      });
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Schema Check Error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to check schema',
+      details: error.message
+    });
+  }
+});
+
+// RESET ENDPOINT - Drops and recreates the users table
 app.post('/reset', async (req, res) => {
   try {
-    console.log('Reset request received - clearing database');
+    console.log('Reset request received - recreating database schema');
     
     const client = await pool.connect();
     try {
-      // Truncate users table to remove all data
-      await client.query('TRUNCATE TABLE users RESTART IDENTITY CASCADE');
+      // Drop and recreate the users table
+      await client.query('DROP TABLE IF EXISTS users');
+      await client.query(`
+        CREATE TABLE users (
+          id SERIAL PRIMARY KEY,
+          email TEXT UNIQUE NOT NULL,
+          password TEXT NOT NULL,
+          salt TEXT NOT NULL,
+          name TEXT NOT NULL,
+          phone TEXT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
       
       console.log('Database reset successfully');
       return res.status(200).json({
         success: true,
-        message: 'Database has been reset successfully. All user data has been removed.'
+        message: 'Database has been reset and recreated successfully.'
       });
     } finally {
       client.release();
