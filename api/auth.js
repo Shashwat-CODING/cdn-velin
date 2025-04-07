@@ -41,6 +41,8 @@ async function initializeDatabase() {
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         salt TEXT NOT NULL,
+        name TEXT NOT NULL,
+        phone TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -81,14 +83,42 @@ app.get('/db-test', async (req, res) => {
   }
 });
 
+// RESET ENDPOINT - Clears all data from the database
+app.post('/reset', async (req, res) => {
+  try {
+    console.log('Reset request received - clearing database');
+    
+    const client = await pool.connect();
+    try {
+      // Truncate users table to remove all data
+      await client.query('TRUNCATE TABLE users RESTART IDENTITY CASCADE');
+      
+      console.log('Database reset successfully');
+      return res.status(200).json({
+        success: true,
+        message: 'Database has been reset successfully. All user data has been removed.'
+      });
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Reset Error:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Failed to reset database', 
+      details: error.message 
+    });
+  }
+});
+
 // SIGNUP ENDPOINT
 app.post('/signup', async (req, res) => {
   try {
     console.log('Signup request received:', req.body);
-    const { email, password } = req.body;
+    const { email, password, name, phone } = req.body;
     
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: 'Email and password required' });
+    if (!email || !password || !name || !phone) {
+      return res.status(400).json({ success: false, message: 'Email, password, name, and phone number are required' });
     }
     
     // Check if user already exists
@@ -101,17 +131,19 @@ app.post('/signup', async (req, res) => {
     const salt = generateSalt();
     const hashedPassword = hashPassword(password, salt);
     
-    // Store user
+    // Store user with new fields
     await pool.query(
-      'INSERT INTO users (email, password, salt) VALUES ($1, $2, $3)',
-      [email, hashedPassword, salt]
+      'INSERT INTO users (email, password, salt, name, phone) VALUES ($1, $2, $3, $4, $5)',
+      [email, hashedPassword, salt, name, phone]
     );
     
     console.log('User created successfully:', email);
     return res.status(201).json({
       success: true,
       message: 'User created successfully',
-      email
+      email,
+      name,
+      phone
     });
   } catch (error) {
     console.error('Signup Error:', error);
@@ -153,7 +185,9 @@ app.post('/signin', async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Login successful',
-      email: user.email
+      email: user.email,
+      name: user.name,
+      phone: user.phone
     });
   } catch (error) {
     console.error('Signin Error:', error);
@@ -165,10 +199,11 @@ app.post('/signin', async (req, res) => {
   }
 });
 
-// LIST ALL USERS ENDPOINT
+// LIST ALL USERS ENDPOINT - Now including all user data for internal use
 app.get('/users', async (req, res) => {
   try {
-    const result = await pool.query('SELECT email, created_at FROM users');
+    // Updated to include name, phone, and password (since this is for internal use only)
+    const result = await pool.query('SELECT id, email, name, phone, password, salt, created_at FROM users');
     
     return res.status(200).json({
       success: true,
