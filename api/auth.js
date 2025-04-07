@@ -9,9 +9,9 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Connection config
+// Connection config using environment variable
 const pool = new Pool({
-  connectionString: 'postgresql://podcast_owner:npg_4AqXVbtgrGz3@ep-noisy-resonance-a5j31fh8-pooler.us-east-2.aws.neon.tech/podcast?sslmode=require',
+  connectionString: process.env.URI,
   ssl: {
     rejectUnauthorized: true
   }
