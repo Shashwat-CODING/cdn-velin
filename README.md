@@ -1,122 +1,113 @@
 # Authentication API Documentation
 
-Base URL: `https://vercel-auth-delta.vercel.app/`
+This API provides user authentication services including signup, signin, and user management functionality.
 
-## Overview
+## Base URL
 
-This API provides authentication services including user registration and login functionality. The API uses JSON for request and response payloads.
+```
+https://vercel-auth-delta.vercel.app/
+```
 
-## Endpoints
+## API Endpoints
 
 ### Health Check
 
-Check if the API server is running properly.
+Verify if the API server is operational.
 
-```
-GET /health
-```
+**Endpoint:** `GET /health`
 
-#### Response
-
+**Response:**
 ```json
 {
-  "status": "ok", 
+  "status": "ok",
   "message": "Server is running"
 }
 ```
 
 ### Database Connection Test
 
-Verify the database connection is working correctly.
+Test the connection to the database.
 
-```
-GET /db-test
-```
+**Endpoint:** `GET /db-test`
 
-#### Successful Response
-
+**Success Response:**
 ```json
 {
   "success": true,
   "message": "Database connection successful",
-  "timestamp": "2025-04-06T12:34:56.789Z"
+  "timestamp": "2025-04-07T12:34:56.789Z"
 }
 ```
 
-#### Error Response
-
+**Error Response:**
 ```json
 {
   "success": false,
   "message": "Database connection failed",
-  "details": "Error message details"
+  "details": "Error details here"
 }
 ```
 
-### User Registration
+### User Signup
 
-Register a new user account.
+Register a new user with the system.
 
-```
-POST /signup
-```
+**Endpoint:** `POST /signup`
 
-#### Request Body
-
+**Request Body:**
 ```json
 {
   "email": "user@example.com",
-  "password": "securepassword123"
+  "password": "securepassword123",
+  "name": "John Doe",
+  "phone": "+1234567890"
 }
 ```
 
-#### Successful Response (201 Created)
-
+**Success Response (201):**
 ```json
 {
   "success": true,
   "message": "User created successfully",
-  "email": "user@example.com"
+  "email": "user@example.com",
+  "name": "John Doe",
+  "phone": "+1234567890"
 }
 ```
 
-#### Error Responses
+**Error Responses:**
+- **400 Bad Request** - Missing required fields
+  ```json
+  {
+    "success": false,
+    "message": "Email, password, name, and phone number are required"
+  }
+  ```
 
-**Missing Fields (400 Bad Request)**
-```json
-{
-  "success": false,
-  "message": "Email and password required"
-}
-```
+- **409 Conflict** - User already exists
+  ```json
+  {
+    "success": false,
+    "message": "User already exists"
+  }
+  ```
 
-**User Already Exists (409 Conflict)**
-```json
-{
-  "success": false,
-  "message": "User already exists"
-}
-```
+- **500 Server Error**
+  ```json
+  {
+    "success": false,
+    "message": "Server error",
+    "details": "Error details here"
+  }
+  ```
 
-**Server Error (500 Internal Server Error)**
-```json
-{
-  "success": false,
-  "message": "Server error",
-  "details": "Error message details"
-}
-```
-
-### User Login
+### User Signin
 
 Authenticate an existing user.
 
-```
-POST /signin
-```
+**Endpoint:** `POST /signin`
 
-#### Request Body
-
+**Request Body:**
 ```json
 {
   "email": "user@example.com",
@@ -124,51 +115,159 @@ POST /signin
 }
 ```
 
-#### Successful Response (200 OK)
-
+**Success Response (200):**
 ```json
 {
   "success": true,
   "message": "Login successful",
-  "email": "user@example.com"
+  "email": "user@example.com",
+  "name": "John Doe",
+  "phone": "+1234567890"
 }
 ```
 
-#### Error Responses
+**Error Responses:**
+- **400 Bad Request** - Missing required fields
+  ```json
+  {
+    "success": false,
+    "message": "Email and password required"
+  }
+  ```
 
-**Missing Fields (400 Bad Request)**
+- **401 Unauthorized** - Invalid credentials
+  ```json
+  {
+    "success": false,
+    "message": "Invalid credentials"
+  }
+  ```
+
+- **500 Server Error**
+  ```json
+  {
+    "success": false,
+    "message": "Server error",
+    "details": "Error details here"
+  }
+  ```
+
+### List All Users (Internal Use Only)
+
+Retrieve information about all registered users.
+
+**Endpoint:** `GET /users`
+
+**Success Response (200):**
 ```json
 {
-  "success": false,
-  "message": "Email and password required"
+  "success": true,
+  "userCount": 2,
+  "users": [
+    {
+      "id": 1,
+      "email": "user1@example.com",
+      "name": "User One",
+      "phone": "+1234567890",
+      "password": "hashedpasswordvalue",
+      "salt": "randomsaltvalue",
+      "created_at": "2025-04-07T10:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "email": "user2@example.com",
+      "name": "User Two",
+      "phone": "+0987654321",
+      "password": "hashedpasswordvalue",
+      "salt": "randomsaltvalue",
+      "created_at": "2025-04-07T11:45:00.000Z"
+    }
+  ]
 }
 ```
 
-**Invalid Credentials (401 Unauthorized)**
-```json
-{
-  "success": false,
-  "message": "Invalid credentials"
-}
-```
-
-**Server Error (500 Internal Server Error)**
+**Error Response (500):**
 ```json
 {
   "success": false,
   "message": "Server error",
-  "details": "Error message details"
+  "details": "Error details here"
 }
 ```
 
-## Error Handling
+## Sample Code
 
-The API returns appropriate HTTP status codes along with JSON responses containing:
-- `success`: Boolean indicating if the request was successful
-- `message`: Human-readable description of the result
-- `details`: (Only on 500 errors) Technical details about the error
+### JavaScript (Fetch API)
 
-## Content Types
+#### Signup Example
+```javascript
+async function signupUser(userData) {
+  try {
+    const response = await fetch('https://vercel-auth-delta.vercel.app/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: userData.email,
+        password: userData.password,
+        name: userData.name,
+        phone: userData.phone
+      })
+    });
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Signup error:', error);
+    throw error;
+  }
+}
+```
 
-- All requests must include `Content-Type: application/json` header
-- All responses will be in JSON format
+#### Signin Example
+```javascript
+async function signinUser(credentials) {
+  try {
+    const response = await fetch('https://vercel-auth-delta.vercel.app/signin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password
+      })
+    });
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Signin error:', error);
+    throw error;
+  }
+}
+```
+
+#### List Users Example
+```javascript
+async function getUsers() {
+  try {
+    const response = await fetch('https://vercel-auth-delta.vercel.app/users');
+    return await response.json();
+  } catch (error) {
+    console.error('Get users error:', error);
+    throw error;
+  }
+}
+```
+
+## Important Notes
+
+- The `/users` endpoint provides sensitive information including password hashes and should **only be used internally** with proper access controls.
+- All endpoints return JSON responses with a consistent structure including a `success` boolean flag.
+- HTTP status codes are used appropriately to indicate the result of the request.
+
+## Security Considerations
+
+- This API does not implement token-based authentication. Consider implementing JWT for production use.
+- Password hashing is implemented server-side using SHA-256 with salting.
+- Ensure that this API is only accessible over HTTPS in production environments.
