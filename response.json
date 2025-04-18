@@ -1,0 +1,880 @@
+{
+  "responseContext": {
+    "visitorData": "string",
+    "serviceTrackingParams": [
+      {
+        "service": "string",
+        "params": [
+          {
+            "key": "string",
+            "value": "string"
+          }
+        ]
+      }
+    ],
+    "maxAgeSeconds": "number"
+  },
+  "playabilityStatus": {
+    "status": "string",
+    "playableInEmbed": "boolean",
+    "offlineability": {
+      "buttonRenderer": {
+        "serviceEndpoint": {
+          "clickTrackingParams": "string",
+          "ypcGetOfflineUpsellEndpoint": {
+            "params": "string"
+          }
+        },
+        "trackingParams": "string",
+        "themedBasicColorPalette": {
+          "foregroundTitleColor": "string",
+          "foregroundIconColor": "string"
+        }
+      }
+    },
+    "miniplayer": {
+      "miniplayerRenderer": {
+        "playbackMode": "string"
+      }
+    },
+    "contextParams": "string"
+  },
+  "streamingData": {
+    "expiresInSeconds": "string",
+    "formats": [
+      {
+        "itag": "number",
+        "url": "string",
+        "mimeType": "string",
+        "bitrate": "number",
+        "width": "number",
+        "height": "number",
+        "lastModified": "string",
+        "contentLength": "string",
+        "quality": "string",
+        "fps": "number",
+        "qualityLabel": "string",
+        "projectionType": "string",
+        "averageBitrate": "number",
+        "audioQuality": "string",
+        "approxDurationMs": "string",
+        "audioSampleRate": "string",
+        "audioChannels": "number"
+      }
+    ],
+    "adaptiveFormats": [
+      {
+        "itag": "number",
+        "url": "string",
+        "mimeType": "string",
+        "bitrate": "number",
+        "width": "number",
+        "height": "number",
+        "initRange": {
+          "start": "string",
+          "end": "string"
+        },
+        "indexRange": {
+          "start": "string",
+          "end": "string"
+        },
+        "lastModified": "string",
+        "contentLength": "string",
+        "quality": "string",
+        "fps": "number",
+        "qualityLabel": "string",
+        "projectionType": "string",
+        "averageBitrate": "number",
+        "approxDurationMs": "string"
+      }
+    ],
+    "serverAbrStreamingUrl": "string",
+    "metadataFormats": [
+      {}
+    ]
+  },
+  "playbackTracking": {
+    "videostatsPlaybackUrl": {
+      "baseUrl": "string",
+      "headers": [
+        {
+          "headerType": "string"
+        }
+      ]
+    },
+    "videostatsDelayplayUrl": {
+      "baseUrl": "string",
+      "headers": [
+        {
+          "headerType": "string"
+        }
+      ]
+    },
+    "videostatsWatchtimeUrl": {
+      "baseUrl": "string",
+      "headers": [
+        {
+          "headerType": "string"
+        }
+      ]
+    },
+    "ptrackingUrl": {
+      "baseUrl": "string",
+      "headers": [
+        {
+          "headerType": "string"
+        }
+      ]
+    },
+    "qoeUrl": {
+      "baseUrl": "string",
+      "headers": [
+        {
+          "headerType": "string"
+        }
+      ]
+    },
+    "atrUrl": {
+      "baseUrl": "string",
+      "elapsedMediaTimeSeconds": "number",
+      "headers": [
+        {
+          "headerType": "string"
+        }
+      ]
+    },
+    "engageUrl": {
+      "baseUrl": "string",
+      "headers": [
+        {
+          "headerType": "string"
+        }
+      ]
+    },
+    "videostatsScheduledFlushWalltimeSeconds": [
+      "number"
+    ],
+    "videostatsDefaultFlushIntervalSeconds": "number",
+    "youtubeRemarketingUrl": {
+      "baseUrl": "string",
+      "elapsedMediaTimeSeconds": "number",
+      "headers": [
+        {
+          "headerType": "string"
+        }
+      ]
+    }
+  },
+  "captions": {
+    "playerCaptionsTracklistRenderer": {
+      "captionTracks": [
+        {
+          "baseUrl": "string",
+          "name": {
+            "runs": [
+              {
+                "text": "string"
+              }
+            ]
+          },
+          "vssId": "string",
+          "languageCode": "string",
+          "isTranslatable": "boolean",
+          "trackName": "string"
+        }
+      ],
+      "audioTracks": [
+        {
+          "captionTrackIndices": [
+            "number"
+          ]
+        }
+      ],
+      "defaultAudioTrackIndex": "number"
+    }
+  },
+  "videoDetails": {
+    "videoId": "string",
+    "title": "string",
+    "lengthSeconds": "string",
+    "keywords": [
+      "string"
+    ],
+    "channelId": "string",
+    "isOwnerViewing": "boolean",
+    "shortDescription": "string",
+    "isCrawlable": "boolean",
+    "thumbnail": {
+      "thumbnails": [
+        {
+          "url": "string",
+          "width": "number",
+          "height": "number"
+        }
+      ]
+    },
+    "allowRatings": "boolean",
+    "viewCount": "string",
+    "author": "string",
+    "isPrivate": "boolean",
+    "isUnpluggedCorpus": "boolean",
+    "isLiveContent": "boolean"
+  },
+  "playerConfig": {
+    "audioConfig": {
+      "loudnessDb": "number",
+      "perceptualLoudnessDb": "number",
+      "enablePerFormatLoudness": "boolean"
+    },
+    "exoPlayerConfig": {
+      "useExoPlayer": "boolean",
+      "useAdaptiveBitrate": "boolean",
+      "maxInitialByteRate": "number",
+      "minDurationForQualityIncreaseMs": "number",
+      "maxDurationForQualityDecreaseMs": "number",
+      "minDurationToRetainAfterDiscardMs": "number",
+      "lowWatermarkMs": "number",
+      "highWatermarkMs": "number",
+      "lowPoolLoad": "number",
+      "highPoolLoad": "number",
+      "sufficientBandwidthOverhead": "number",
+      "bufferChunkSizeKb": "number",
+      "httpConnectTimeoutMs": "number",
+      "httpReadTimeoutMs": "number",
+      "numAudioSegmentsPerFetch": "number",
+      "numVideoSegmentsPerFetch": "number",
+      "minDurationForPlaybackStartMs": "number",
+      "enableExoplayerReuse": "boolean",
+      "useRadioTypeForInitialQualitySelection": "boolean",
+      "blacklistFormatOnError": "boolean",
+      "enableBandaidHttpDataSource": "boolean",
+      "httpLoadTimeoutMs": "number",
+      "canPlayHdDrm": "boolean",
+      "videoBufferSegmentCount": "number",
+      "audioBufferSegmentCount": "number",
+      "useAbruptSplicing": "boolean",
+      "minRetryCount": "number",
+      "minChunksNeededToPreferOffline": "number",
+      "secondsToMaxAggressiveness": "number",
+      "enableSurfaceviewResizeWorkaround": "boolean",
+      "enableVp9IfThresholdsPass": "boolean",
+      "matchQualityToViewportOnUnfullscreen": "boolean",
+      "lowAudioQualityConnTypes": [
+        "string"
+      ],
+      "useDashForLiveStreams": "boolean",
+      "enableLibvpxVideoTrackRenderer": "boolean",
+      "lowAudioQualityBandwidthThresholdBps": "number",
+      "enableVariableSpeedPlayback": "boolean",
+      "preferOnesieBufferedFormat": "boolean",
+      "minimumBandwidthSampleBytes": "number",
+      "useDashForOtfAndCompletedLiveStreams": "boolean",
+      "disableCacheAwareVideoFormatEvaluation": "boolean",
+      "useLiveDvrForDashLiveStreams": "boolean",
+      "cronetResetTimeoutOnRedirects": "boolean",
+      "emitVideoDecoderChangeEvents": "boolean",
+      "onesieVideoBufferLoadTimeoutMs": "string",
+      "onesieVideoBufferReadTimeoutMs": "string",
+      "libvpxEnableGl": "boolean",
+      "enableVp9EncryptedIfThresholdsPass": "boolean",
+      "enableOpus": "boolean",
+      "usePredictedBuffer": "boolean",
+      "maxReadAheadMediaTimeMs": "number",
+      "useMediaTimeCappedLoadControl": "boolean",
+      "allowCacheOverrideToLowerQualitiesWithinRange": "number",
+      "allowDroppingUndecodedFrames": "boolean",
+      "minDurationForPlaybackRestartMs": "number",
+      "serverProvidedBandwidthHeader": "string",
+      "liveOnlyPegStrategy": "string",
+      "enableRedirectorHostFallback": "boolean",
+      "enableHighlyAvailableFormatFallbackOnPcr": "boolean",
+      "recordTrackRendererTimingEvents": "boolean",
+      "minErrorsForRedirectorHostFallback": "number",
+      "nonHardwareMediaCodecNames": [
+        "string"
+      ],
+      "enableVp9IfInHardware": "boolean",
+      "enableVp9EncryptedIfInHardware": "boolean",
+      "useOpusMedAsLowQualityAudio": "boolean",
+      "minErrorsForPcrFallback": "number",
+      "useStickyRedirectHttpDataSource": "boolean",
+      "onlyVideoBandwidth": "boolean",
+      "useRedirectorOnNetworkChange": "boolean",
+      "enableMaxReadaheadAbrThreshold": "boolean",
+      "cacheCheckDirectoryWritabilityOnce": "boolean",
+      "predictorType": "string",
+      "slidingPercentile": "number",
+      "slidingWindowSize": "number",
+      "maxFrameDropIntervalMs": "number",
+      "ignoreLoadTimeoutForFallback": "boolean",
+      "serverBweMultiplier": "number",
+      "drmMaxKeyfetchDelayMs": "number",
+      "maxResolutionForWhiteNoise": "number",
+      "whiteNoiseRenderEffectMode": "string",
+      "enableLibvpxHdr": "boolean",
+      "enableCacheAwareStreamSelection": "boolean",
+      "useExoCronetDataSource": "boolean",
+      "whiteNoiseScale": "number",
+      "whiteNoiseOffset": "number",
+      "preventVideoFrameLaggingWithLibvpx": "boolean",
+      "enableMediaCodecHdr": "boolean",
+      "enableMediaCodecSwHdr": "boolean",
+      "liveOnlyWindowChunks": "number",
+      "bearerMinDurationToRetainAfterDiscardMs": [
+        "number"
+      ],
+      "forceWidevineL3": "boolean",
+      "useAverageBitrate": "boolean",
+      "useMedialibAudioTrackRendererForLive": "boolean",
+      "useExoPlayerV2": "boolean",
+      "logMediaRequestEventsToCsi": "boolean",
+      "onesieFixNonZeroStartTimeFormatSelection": "boolean",
+      "liveOnlyReadaheadStepSizeChunks": "number",
+      "liveOnlyBufferHealthHalfLifeSeconds": "number",
+      "liveOnlyMinBufferHealthRatio": "number",
+      "liveOnlyMinLatencyToSeekRatio": "number",
+      "manifestlessPartialChunkStrategy": "string",
+      "ignoreViewportSizeWhenSticky": "boolean",
+      "enableLibvpxFallback": "boolean",
+      "disableLibvpxLoopFilter": "boolean",
+      "enableVpxMediaView": "boolean",
+      "hdrMinScreenBrightness": "number",
+      "hdrMaxScreenBrightnessThreshold": "number",
+      "onesieDataSourceAboveCacheDataSource": "boolean",
+      "httpNonplayerLoadTimeoutMs": "number",
+      "numVideoSegmentsPerFetchStrategy": "string",
+      "maxVideoDurationPerFetchMs": "number",
+      "maxVideoEstimatedLoadDurationMs": "number",
+      "estimatedServerClockHalfLife": "number",
+      "estimatedServerClockStrictOffset": "boolean",
+      "minReadAheadMediaTimeMs": "number",
+      "readAheadGrowthRate": "number",
+      "useDynamicReadAhead": "boolean",
+      "useYtVodMediaSourceForV2": "boolean",
+      "enableV2Gapless": "boolean",
+      "useLiveHeadTimeMillis": "boolean",
+      "allowTrackSelectionWithUpdatedVideoItagsForExoV2": "boolean",
+      "maxAllowableTimeBeforeMediaTimeUpdateSec": "number",
+      "enableDynamicHdr": "boolean",
+      "v2PerformEarlyStreamSelection": "boolean",
+      "v2UsePlaybackStreamSelectionResult": "boolean",
+      "v2MinTimeBetweenAbrReevaluationMs": "number",
+      "avoidReusePlaybackAcrossLoadvideos": "boolean",
+      "enableInfiniteNetworkLoadingRetries": "boolean",
+      "reportExoPlayerStateOnTransition": "boolean",
+      "manifestlessSequenceMethod": "string",
+      "useLiveHeadWindow": "boolean",
+      "enableDynamicHdrInHardware": "boolean",
+      "ultralowAudioQualityBandwidthThresholdBps": "number",
+      "retryLiveNetNocontentWithDelay": "boolean",
+      "ignoreUnneededSeeksToLiveHead": "boolean",
+      "adaptiveLiveHeadWindow": "boolean",
+      "drmMetricsQoeLoggingFraction": "number",
+      "liveNetNocontentMaximumErrors": "number",
+      "waitForDrmLicenseBeforeProcessingAndroidStuckBufferfull": "boolean",
+      "slidingPercentileScalar": "number",
+      "minAdaptiveVideoQuality": "number",
+      "retryLiveEmptyChunkWithDelay": "boolean",
+      "platypusBackBufferDurationMs": "number"
+    },
+    "playbackStartConfig": {
+      "startTimeToleranceBeforeMs": "string"
+    },
+    "adRequestConfig": {
+      "filterTimeEventsOnDelta": "number",
+      "useCriticalExecOnAdsPrep": "boolean",
+      "userCriticalExecOnAdsProcessing": "boolean",
+      "enableCountdownNextToThumbnailAndroid": "boolean",
+      "preskipScalingFactorAndroid": "number",
+      "preskipPaddingAndroid": "number"
+    },
+    "networkProtocolConfig": {
+      "useQuic": "boolean"
+    },
+    "androidNetworkStackConfig": {
+      "networkStack": "string",
+      "androidCronetResponsePriority": {
+        "priorityValue": "string"
+      },
+      "androidMetadataNetworkConfig": {
+        "coalesceRequests": "boolean"
+      }
+    },
+    "lidarSdkConfig": {
+      "enableActiveViewReporter": "boolean",
+      "useMediaTime": "boolean",
+      "sendTosMetrics": "boolean",
+      "usePlayerState": "boolean",
+      "enableIosAppStateCheck": "boolean",
+      "enableImprovedSizeReportingAndroid": "boolean",
+      "enableIsAndroidVideoAlwaysMeasurable": "boolean",
+      "enableActiveViewAudioMeasurementAndroid": "boolean"
+    },
+    "androidMedialibConfig": {
+      "isItag18MainProfile": "boolean",
+      "initialBandwidthEstimates": [
+        {
+          "detailedNetworkType": "string",
+          "bandwidthBps": "string"
+        }
+      ],
+      "viewportSizeFraction": "number",
+      "enablePrerollPrebuffer": "boolean",
+      "prebufferOptimizeForViewportSize": "boolean",
+      "hpqViewportSizeFraction": "number"
+    },
+    "playerControlsConfig": {
+      "showCachedInTimebar": "boolean"
+    },
+    "variableSpeedConfig": {
+      "availablePlaybackSpeeds": [
+        {
+          "label": {
+            "runs": [
+              {
+                "text": "string"
+              }
+            ]
+          },
+          "value": "number"
+        }
+      ],
+      "androidVariableSpeedTimeoutSecs": "number",
+      "enableVariableSpeedOnOtf": "boolean"
+    },
+    "decodeQualityConfig": {
+      "maximumVideoDecodeVerticalResolution": "number"
+    },
+    "vrConfig": {
+      "allowVr": "boolean",
+      "allowSubtitles": "boolean",
+      "showHqButton": "boolean",
+      "sphericalDirectionLoggingEnabled": "boolean",
+      "enableAndroidVr180MagicWindow": "boolean",
+      "enableAndroidMagicWindowEduOverlay": "boolean",
+      "magicWindowEduOverlayText": "string",
+      "magicWindowEduOverlayAnimationUrl": "string",
+      "enableMagicWindowZoom": "boolean",
+      "useCardboardOssSdk": "boolean"
+    },
+    "qoeStatsClientConfig": {
+      "batchedEntriesPeriodMs": "string"
+    },
+    "androidPlayerStatsConfig": {
+      "usePblForAttestationReporting": "boolean",
+      "usePblForHeartbeatReporting": "boolean",
+      "usePblForPlaybacktrackingReporting": "boolean",
+      "usePblForQoeReporting": "boolean",
+      "changeCpnOnFatalPlaybackError": "boolean"
+    },
+    "stickyQualitySelectionConfig": {
+      "stickySelectionType": "string",
+      "expirationTimeSinceLastManualVideoQualitySelectionMs": "string",
+      "expirationTimeSinceLastPlaybackStartMs": "string",
+      "stickyCeilingOverridesSimpleBitrateCap": "boolean"
+    },
+    "adSurveyRequestConfig": {
+      "useGetRequests": "boolean"
+    },
+    "retryConfig": {
+      "retryEligibleErrors": [
+        "string"
+      ],
+      "retryUnderSameConditionAttempts": "number",
+      "retryWithNewSurfaceAttempts": "number",
+      "progressiveFallbackOnNonNetworkErrors": "boolean",
+      "l3FallbackOnDrmErrors": "boolean",
+      "retryAfterCacheRemoval": "boolean",
+      "widevineL3EnforcedFallbackOnDrmErrors": "boolean",
+      "exoProxyableFormatFallback": "boolean",
+      "maxPlayerRetriesWhenNetworkUnavailable": "number",
+      "retryWithLibvpx": "boolean",
+      "suppressFatalErrorAfterStop": "boolean",
+      "fallbackFromHfrToSfrOnFormatDecodeError": "boolean"
+    },
+    "cmsPathProbeConfig": {
+      "cmsPathProbeDelayMs": "number"
+    },
+    "mediaCommonConfig": {
+      "dynamicReadaheadConfig": {
+        "maxReadAheadMediaTimeMs": "number",
+        "minReadAheadMediaTimeMs": "number",
+        "readAheadGrowthRateMs": "number",
+        "readAheadWatermarkMarginRatio": "number",
+        "minReadAheadWatermarkMarginMs": "number",
+        "maxReadAheadWatermarkMarginMs": "number",
+        "shouldIncorporateNetworkActiveState": "boolean"
+      },
+      "mediaUstreamerRequestConfig": {
+        "enableVideoPlaybackRequest": "boolean",
+        "videoPlaybackUstreamerConfig": "string",
+        "videoPlaybackPostEmptyBody": "boolean",
+        "isVideoPlaybackRequestIdempotent": "boolean"
+      },
+      "predictedReadaheadConfig": {
+        "minReadaheadMs": "number",
+        "maxReadaheadMs": "number"
+      },
+      "mediaFetchRetryConfig": {
+        "initialDelayMs": "number",
+        "backoffFactor": "number",
+        "maximumDelayMs": "number",
+        "jitterFactor": "number"
+      },
+      "mediaFetchMaximumServerErrors": "number",
+      "mediaFetchMaximumNetworkErrors": "number",
+      "mediaFetchMaximumErrors": "number",
+      "serverReadaheadConfig": {
+        "nextRequestPolicy": {
+          "targetAudioReadaheadMs": "number",
+          "targetVideoReadaheadMs": "number"
+        }
+      },
+      "useServerDrivenAbr": "boolean",
+      "sabrClientConfig": {
+        "defaultBackOffTimeMs": "number",
+        "enableHostFallback": "boolean",
+        "primaryProbingDelayMs": "number",
+        "maxFailureAttemptsBeforeFallback": "number",
+        "enableServerInitiatedHostFallback": "boolean"
+      },
+      "serverPlaybackStartConfig": {
+        "enable": "boolean",
+        "playbackStartPolicy": {
+          "startMinReadaheadPolicy": [
+            {
+              "minReadaheadMs": "number"
+            }
+          ]
+        }
+      },
+      "usePlatypus": "boolean"
+    },
+    "playerGestureConfig": {
+      "downAndOutLandscapeAllowed": "boolean",
+      "downAndOutPortraitAllowed": "boolean"
+    },
+    "taskCoordinatorConfig": {
+      "prefetchCoordinatorBufferedPositionMillisRelease": "number",
+      "prefetchCoordinatorBufferedPositionMillisPause": "number"
+    }
+  },
+  "storyboards": {
+    "playerStoryboardSpecRenderer": {
+      "spec": "string",
+      "recommendedLevel": "number"
+    }
+  },
+  "trackingParams": "string",
+  "attestation": {
+    "playerAttestationRenderer": {
+      "challenge": "string"
+    }
+  },
+  "endscreen": {
+    "endscreenRenderer": {
+      "elements": [
+        {
+          "endscreenElementRenderer": {
+            "style": "string",
+            "image": {
+              "thumbnails": [
+                {
+                  "url": "string",
+                  "width": "number",
+                  "height": "number"
+                }
+              ]
+            },
+            "icon": {
+              "thumbnails": [
+                {
+                  "url": "string"
+                }
+              ]
+            },
+            "left": "number",
+            "width": "number",
+            "top": "number",
+            "aspectRatio": "number",
+            "startMs": "string",
+            "endMs": "string",
+            "title": {
+              "runs": [
+                {
+                  "text": "string"
+                }
+              ],
+              "accessibility": {
+                "accessibilityData": {
+                  "label": "string"
+                }
+              }
+            },
+            "metadata": {},
+            "callToAction": {
+              "runs": [
+                {
+                  "text": "string"
+                }
+              ]
+            },
+            "dismiss": {
+              "runs": [
+                {
+                  "text": "string"
+                }
+              ]
+            },
+            "endpoint": {
+              "clickTrackingParams": "string",
+              "browseEndpoint": {
+                "browseId": "string"
+              }
+            },
+            "hovercardButton": {
+              "subscribeButtonRenderer": {
+                "buttonText": {
+                  "runs": [
+                    {
+                      "text": "string"
+                    }
+                  ]
+                },
+                "subscribed": "boolean",
+                "enabled": "boolean",
+                "type": "string",
+                "channelId": "string",
+                "showPreferences": "boolean",
+                "unsubscribeMessage": {
+                  "paidChannelUnsubscribeMessageRenderer": {
+                    "unsubscribeMessage": {
+                      "runs": [
+                        {
+                          "text": "string"
+                        }
+                      ]
+                    },
+                    "keepSubscriptionButtonText": {
+                      "runs": [
+                        {
+                          "text": "string"
+                        }
+                      ]
+                    },
+                    "unsubscriptionAllowed": "boolean",
+                    "unsubscribeButtonText": {
+                      "runs": [
+                        {
+                          "text": "string"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "subscribedButtonText": {
+                  "runs": [
+                    {
+                      "text": "string"
+                    }
+                  ]
+                },
+                "unsubscribedButtonText": {
+                  "runs": [
+                    {
+                      "text": "string"
+                    }
+                  ]
+                },
+                "trackingParams": "string",
+                "unsubscribeButtonText": {
+                  "runs": [
+                    {
+                      "text": "string"
+                    }
+                  ]
+                },
+                "serviceEndpoints": [
+                  {
+                    "clickTrackingParams": "string",
+                    "subscribeEndpoint": {
+                      "channelIds": [
+                        "string"
+                      ],
+                      "params": "string"
+                    }
+                  }
+                ],
+                "style": {
+                  "styleType": "string",
+                  "suppressFreeIcon": "boolean"
+                },
+                "subscribeAccessibility": {
+                  "accessibilityData": {
+                    "label": "string"
+                  }
+                },
+                "unsubscribeAccessibility": {
+                  "accessibilityData": {
+                    "label": "string"
+                  }
+                },
+                "serverTimestampMs": "string"
+              }
+            },
+            "trackingParams": "string",
+            "isSubscribe": "boolean",
+            "id": "string"
+          }
+        }
+      ],
+      "startMs": "string",
+      "trackingParams": "string"
+    }
+  },
+  "overlay": {},
+  "playerSettingsMenuData": {
+    "loggingDirectives": {
+      "trackingParams": "string",
+      "visibility": {
+        "types": "string"
+      }
+    }
+  },
+  "playerOverlayLayerRenderers": [
+    {
+      "playerOverlayLayerRenderer": {
+        "layerPriority": "number",
+        "featurePlayerOverlayRenderers": [
+          {
+            "featurePlayerOverlayRenderer": {
+              "content": {
+                "elementRenderer": {
+                  "trackingParams": "string",
+                  "newElement": {
+                    "type": {
+                      "componentType": {
+                        "templateConfig": {
+                          "uriTemplateConfig": {
+                            "uri": "string"
+                          }
+                        },
+                        "model": {},
+                        "subscriptionConfig": {
+                          "dataStoreSubscriptionConfig": {
+                            "mappings": [
+                              {
+                                "identifier": "string",
+                                "resultField": "number",
+                                "resultPath": [
+                                  "number"
+                                ]
+                              }
+                            ],
+                            "resultField": "number"
+                          },
+                          "environmentSubscriptionConfig": {
+                            "resultField": "number",
+                            "environmentDataField": "number",
+                            "subscription": {
+                              "environmentDataFilter": [
+                                "string"
+                              ]
+                            }
+                          },
+                          "themeSubscriptionConfig": {
+                            "mappings": [
+                              {
+                                "identifier": "string",
+                                "resultPath": [
+                                  "number"
+                                ]
+                              }
+                            ],
+                            "resultField": "number"
+                          },
+                          "capabilitiesSubscriptionConfig": {
+                            "mappings": [
+                              {
+                                "identifier": "string",
+                                "resultPath": [
+                                  "number"
+                                ]
+                              }
+                            ],
+                            "resultField": "number"
+                          }
+                        }
+                      }
+                    },
+                    "properties": {
+                      "identifierProperties": {
+                        "identifier": "string",
+                        "uniqueLoggingIdentifier": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "overlayIdentifier": "string",
+              "priorityInLayer": "number"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "adBreakHeartbeatParams": "string",
+  "frameworkUpdates": {
+    "entityBatchUpdate": {
+      "mutations": [
+        {
+          "entityKey": "string",
+          "type": "string",
+          "payload": {
+            "offlineabilityEntity": {
+              "key": "string",
+              "addToOfflineButtonState": "string",
+              "commandWrapper": {
+                "command": {
+                  "innertubeCommand": {
+                    "clickTrackingParams": "string",
+                    "ypcGetOfflineUpsellEndpoint": {
+                      "params": "string"
+                    }
+                  }
+                },
+                "loggingDirectives": {
+                  "trackingParams": "string"
+                }
+              },
+              "contentCheckOk": "boolean",
+              "racyCheckOk": "boolean",
+              "loggingDirectives": {
+                "trackingParams": "string",
+                "visibility": {
+                  "types": "string"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "timestamp": {
+        "seconds": "string",
+        "nanos": "number"
+      }
+    },
+    "elementUpdate": {
+      "updates": [
+        {
+          "templateUpdate": {
+            "identifier": "string",
+            "serializedTemplateConfig": "string",
+            "resourceTag": "string"
+          }
+        }
+      ]
+    }
+  }
+}
