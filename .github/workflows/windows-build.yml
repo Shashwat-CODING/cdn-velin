@@ -29,11 +29,11 @@ jobs:
         run: |
           pyinstaller --onefile --windowed gcx_app.py
 
-      - name: Copy dist to repo root
+      - name: Clean up old dist folder
+        shell: pwsh
         run: |
-          rm -rf dist-old
-          if exist dist (move dist dist-old)
-          move dist dist
+          Remove-Item -Recurse -Force dist-old -ErrorAction SilentlyContinue
+          if (Test-Path dist) { Remove-Item -Recurse -Force dist }
 
       - name: Commit and push dist folder to main branch
         run: |
